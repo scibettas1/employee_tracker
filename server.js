@@ -13,7 +13,7 @@ var connection = mysql.createConnection({
 
     // Your password
     password: "password",
-    database: "employee_tracker"
+    database: "employee_trackerDB"
 });
 
 // connect to the mysql server and sql database
@@ -59,50 +59,74 @@ function start() {
         });
 }
 
-
+//View all Employees and Their Role, Salary, Department, and Manager
 function viewAll() {
-    //write a function to view all employees
-    connection.query("SELECT * FROM response.employee.id, response.employee.first_name, response.employee.last_name, response.employee.role_id", function (err, response) {
-        if (err) throw err;
-        var employeeArray = [];
-        for (var i = 0; i < response.length; i++) {
-            employeeArray.push(response[i]);
-        }
-        return employeeArray;
-    })
-
+    connection.query("SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id;",
+        function (err, res) {
+            if (err) throw err
+            console.table(res)
+            start()
+        })
 }
 
-function viewDept() {
-    // write a function to list each department
-    connection.query("SELECT * FROM department", function (err, dept) {
-        if (err) throw err;
-        // once you have the items, prompt the user for which they'd like to bid on
-        inquirer
-            .prompt([
-                {
-                    name: "dept",
-                    type: "rawlist",
-                    choices: function () {
-                        var deptArray = [];
-                        for (var i = 0; i < dept.length; i++) {
-                            deptArray.push(dept[i]);
-                        }
-                        return deptArray;
-                    },
-                    message: "Which department would you like to view?"
-                },
-            ])
-            .then(function (answer) {
-                // when finished prompting, display all employees in that department
-                connection.query("SELECT * FROM employee", function (err, employees) {
-                    if (err) throw err;
-                    var employeeArray = [];
-                    for (var i = 0; i < employees.length; i++) {
-                        employeeArray.push(employees[i]);
-                    }
-                    return employeeArray;
-                })
-            })
-    })
-}
+
+function viewByDept() {
+    inquirer
+        .prompt([
+            {
+                name: "dept",
+                type: "list",
+                message: "Which department would you like to view?",
+                choices: ["Sales", "Engineering", "Finance", "Legal"]
+            },
+        ])
+        .then(function (answer) {
+            // when finished prompting, display all employees in that department
+            if (answer.dept === "Sales") {
+                salesDept();
+            }
+            else if (answer.dept === "Engineering") {
+                engDept();
+            }
+            else if (answer.dept === "Finance") {
+                finDept();
+            }
+            else if (answer.dept === "Legal") {
+                legalDept();
+            } else {
+                connection.end();
+            }
+        })
+    }
+    function salesDept(){
+     connection.query("SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id WHERE name = 'Sales';",
+        function (err, res) {
+            if (err) throw err
+            console.table(res)
+            start()
+        })
+    }
+    function engDept(){
+        connection.query("SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id WHERE name = 'Engineering';",
+           function (err, res) {
+               if (err) throw err
+               console.table(res)
+               start()
+           })
+       }
+       function finDept(){
+        connection.query("SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id WHERE name = 'Finance';",
+           function (err, res) {
+               if (err) throw err
+               console.table(res)
+               start()
+           })
+       }
+       function legalDept(){
+        connection.query("SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id WHERE name = 'Legal';",
+           function (err, res) {
+               if (err) throw err
+               console.table(res)
+               start()
+           })
+       }
