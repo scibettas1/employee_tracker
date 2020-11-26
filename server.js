@@ -30,7 +30,7 @@ function start() {
             name: "action",
             type: "list",
             message: "What would you like to do?",
-            choices: ["View All Employees", "View All Employees by Department", "Add Employee", "Remove Employee", "Udate Emplotyee Role", "Udate Employee Manager"]
+            choices: ["View All Employees", "View All Employees by Department", "Add Employee", "Remove Employee", "Udate Employee Role", "Udate Employee Manager", "Exit"]
         }).then(function (answer) {
             // based on their answer, either call the bid or the post functions
             if (answer.action === "View All Employees") {
@@ -61,6 +61,7 @@ function start() {
 
 //View all Employees and Their Role, Salary, Department, and Manager
 function viewAll() {
+    //when I watched our class recordings I realized we did this with the book authors on 11/17/20
     connection.query("SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id;",
         function (err, res) {
             if (err) throw err
@@ -77,7 +78,7 @@ function viewByDept() {
                 name: "dept",
                 type: "list",
                 message: "Which department would you like to view?",
-                choices: ["Sales", "Engineering", "Finance", "Legal"]
+                choices: ["Sales", "Engineering", "Finance", "Legal", "Return to Main Menu", "Exit"]
             },
         ])
         .then(function (answer) {
@@ -93,40 +94,100 @@ function viewByDept() {
             }
             else if (answer.dept === "Legal") {
                 legalDept();
+            }
+            else if (answer.dept === "Return to Main Menu") {
+                start();
             } else {
                 connection.end();
             }
         })
-    }
-    function salesDept(){
-     connection.query("SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id WHERE name = 'Sales';",
+}
+function salesDept() {
+    connection.query("SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id WHERE name = 'Sales';",
         function (err, res) {
             if (err) throw err
             console.table(res)
             start()
         })
+}
+function engDept() {
+    connection.query("SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id WHERE name = 'Engineering';",
+        function (err, res) {
+            if (err) throw err
+            console.table(res)
+            start()
+        })
+}
+function finDept() {
+    connection.query("SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id WHERE name = 'Finance';",
+        function (err, res) {
+            if (err) throw err
+            console.table(res)
+            start()
+        })
+}
+function legalDept() {
+    connection.query("SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id WHERE name = 'Legal';",
+        function (err, res) {
+            if (err) throw err
+            console.table(res)
+            start()
+        })
+}
+function addEmployee() {
+    inquirer
+        .prompt([
+            {
+                name: "firstName",
+                type: "input",
+                message: "Please type the Employee's first name."
+            },
+            {
+                name: "lastName",
+                type: "input",
+                message: "Please type the Employee's last name."
+            },
+           {
+                name: "role",
+                type: "list",
+                message: "What is the Employee's role?",
+                choices: roleChoices()
+                //choices: ["Sales Lead", "Salesperson", "Lead Engineer", "Software Engineer", "Legal Team Lead", "Lawyer", "Accountant", "Return to Main Menu", "Exit"]
+            }
+            /* {
+              name: "manager",
+              type: "list",
+              message: "What is the Employee's role?",
+              choices: ["Sales Lead","Salesperson","Lead Engineer","Software Engineer","Legal Team Lead","Lawyer","Accountant","Return to Main Menu","Exit"]
+            } */
+        ])
+        .then(function (answer) {
+            // when finished prompting, insert a new item into the db with that info
+            var roleId = roleChoices().indexOf(roleArray);
+            connection.query("INSERT INTO employee SET ?",
+                {
+                    first_name: answer.firstName,
+                    last_name: answer.lastName,
+                    role_id: roleId,
+                    //manager_id: answer.startingBid
+                },
+                function (err) {
+                    if (err) throw err;
+                    console.log("Your Employee was added successfully!");
+                    // return to main menu
+                    start();
+                }
+            );
+        });
+}
+
+var roleArray = [];
+function roleChoices() {
+  connection.query("SELECT * FROM role", function(err, res) {
+    if (err) throw err
+    for (var i = 0; i < res.length; i++) {
+      roleArray.push(res[i].title);
     }
-    function engDept(){
-        connection.query("SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id WHERE name = 'Engineering';",
-           function (err, res) {
-               if (err) throw err
-               console.table(res)
-               start()
-           })
-       }
-       function finDept(){
-        connection.query("SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id WHERE name = 'Finance';",
-           function (err, res) {
-               if (err) throw err
-               console.table(res)
-               start()
-           })
-       }
-       function legalDept(){
-        connection.query("SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id WHERE name = 'Legal';",
-           function (err, res) {
-               if (err) throw err
-               console.table(res)
-               start()
-           })
-       }
+  })
+  return roleArray;
+}
