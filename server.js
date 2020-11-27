@@ -39,10 +39,6 @@ function start() {
             else if (answer.action === "View All Employees by Department") {
                 viewByDept();
             }
-            //Part of the Bonus. Saving this for the end.
-            /* else if (answer.action === "View All by Manager") {
-                viewByManger();
-            } */
             else if (answer.action === "Add Employee") {
                 addEmployee();
             }
@@ -137,23 +133,6 @@ function legalDept() {
             start()
         })
 }
-//Part of the bonus to view by manager. I'm saving this for the end.
-/* function viewByManger(){
-    inquirer
-    .prompt([
-        {
-            name: "manager",
-            type: "list",
-            message: "Which department would you like to view?",
-            choices: mgrChoices()
-        },
-    ])
-    .then(function (answer) {
-        // when finished prompting, display all employees with selected manager
-        var mgrId = mgrArray.indexOf(answer.manager) + 1;
-        console.log(mgrId)
-    }) 
-} */
 
 function addEmployee() {
     inquirer
@@ -185,10 +164,10 @@ function addEmployee() {
             // when finished prompting, insert a new item into the db with that info
             var roleId = roleArray.indexOf(answer.role) + 1;
             var employeeId = employeeArray.indexOf(answer.manager) + 1;
-            console.log(roleArray)
-            console.log(roleId)
-            console.log(employeeArray)
-            console.log(employeeId)
+            //console.log(roleArray)
+            //console.log(roleId)
+            //console.log(employeeArray)
+            //console.log(employeeId)
             connection.query("INSERT INTO employee SET ?",
                 {
                     first_name: answer.firstName,
@@ -225,15 +204,16 @@ function updateRole() {
             // when finished prompting, insert a new item into the db with that info
             var roleId = roleArray.indexOf(answer.role) + 1;
             var employeeId = employeeArray.indexOf(answer.selectEmployee) + 1;
-            console.log(roleArray)
-            console.log(roleId)
+            //console.log(roleArray)
+            //console.log(roleId)
             console.log(employeeArray)
+            console.log(employeeId)
             connection.query("UPDATE employee SET WHERE ?",
                 {
-                    id: employeeId
+                    id: employeeId,
                 },
                 {
-                    role_id: roleId
+                    role_id: roleId,
                 },
                 function (err) {
                     if (err) throw err;
