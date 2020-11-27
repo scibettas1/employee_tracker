@@ -163,13 +163,16 @@ function addEmployee() {
         ])
         .then(function (answer) {
             // when finished prompting, insert a new item into the db with that info
-            var roleId = roleChoices().indexOf(roleArray);
+            var roleId = roleArray.indexOf(answer.role) + 1;
+            //console.log(roleChoices)
+            //console.log(roleArray)
+            //console.log(roleId)
             connection.query("INSERT INTO employee SET ?",
                 {
                     first_name: answer.firstName,
                     last_name: answer.lastName,
-                    role_id: roleId,
-                    //manager_id: answer.startingBid
+                    role_id: roleId
+                    //manager_id: 
                 },
                 function (err) {
                     if (err) throw err;
@@ -181,7 +184,7 @@ function addEmployee() {
         });
 }
 
-var roleArray = [];
+const roleArray = [];
 function roleChoices() {
   connection.query("SELECT * FROM role", function(err, res) {
     if (err) throw err
