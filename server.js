@@ -30,7 +30,7 @@ function start() {
             name: "action",
             type: "list",
             message: "What would you like to do?",
-            choices: ["View All Employees", "View All Employees by Department", "Add Employee", "Remove Employee", "Udate Employee Role", "Udate Employee Manager", "Exit"]
+            choices: ["View All Employees", "View All Employees by Department", "Add Employee", "Update Employee Role", "Exit"]
         }).then(function (answer) {
             // based on their answer, either call the bid or the post functions
             if (answer.action === "View All Employees") {
@@ -39,21 +39,24 @@ function start() {
             else if (answer.action === "View All Employees by Department") {
                 viewByDept();
             }
-            else if (answer.action === "View All by Manager") {
+            //Part of the Bonus. Saving this for the end.
+            /* else if (answer.action === "View All by Manager") {
                 viewByManger();
-            }
+            } */
             else if (answer.action === "Add Employee") {
                 addEmployee();
             }
-            else if (answer.action === "Remove Employee") {
+            //Part of the Bonus. Saving this for the end.
+            /* else if (answer.action === "Remove Employee") {
                 removeEmployee();
-            }
-            else if (answer.action === "Udate Employee Role") {
+            } */
+            else if (answer.action === "Update Employee Role") {
                 updateRole();
             }
-            else if (answer.action === "Udate Employee Manager") {
+            //Part of the Bonus. Saving this for the end.
+            /* else if (answer.action === "Udate Employee Manager") {
                 updateManger();
-            } else {
+            } */ else {
                 connection.end();
             }
         });
@@ -134,6 +137,24 @@ function legalDept() {
             start()
         })
 }
+//Part of the bonus to view by manager. I'm saving this for the end.
+/* function viewByManger(){
+    inquirer
+    .prompt([
+        {
+            name: "manager",
+            type: "list",
+            message: "Which department would you like to view?",
+            choices: mgrChoices()
+        },
+    ])
+    .then(function (answer) {
+        // when finished prompting, display all employees with selected manager
+        var mgrId = mgrArray.indexOf(answer.manager) + 1;
+        console.log(mgrId)
+    }) 
+} */
+
 function addEmployee() {
     inquirer
         .prompt([
@@ -147,32 +168,33 @@ function addEmployee() {
                 type: "input",
                 message: "Please type the Employee's last name."
             },
-           {
+            {
                 name: "role",
                 type: "list",
                 message: "What is the Employee's role?",
                 choices: roleChoices()
-                //choices: ["Sales Lead", "Salesperson", "Lead Engineer", "Software Engineer", "Legal Team Lead", "Lawyer", "Accountant", "Return to Main Menu", "Exit"]
+            },
+            {
+                name: "manager",
+                type: "list",
+                message: "Who is the Employee's manager?",
+                choices: employeeChoices()
             }
-            /* {
-              name: "manager",
-              type: "list",
-              message: "What is the Employee's role?",
-              choices: ["Sales Lead","Salesperson","Lead Engineer","Software Engineer","Legal Team Lead","Lawyer","Accountant","Return to Main Menu","Exit"]
-            } */
         ])
         .then(function (answer) {
             // when finished prompting, insert a new item into the db with that info
             var roleId = roleArray.indexOf(answer.role) + 1;
-            //console.log(roleChoices)
-            //console.log(roleArray)
-            //console.log(roleId)
+            var employeeId = employeeArray.indexOf(answer.manager) + 1;
+            console.log(roleArray)
+            console.log(roleId)
+            console.log(employeeArray)
+            console.log(employeeId)
             connection.query("INSERT INTO employee SET ?",
                 {
                     first_name: answer.firstName,
                     last_name: answer.lastName,
-                    role_id: roleId
-                    //manager_id: 
+                    role_id: roleId,
+                    manager_id: employeeId
                 },
                 function (err) {
                     if (err) throw err;
@@ -183,14 +205,63 @@ function addEmployee() {
             );
         });
 }
+function updateRole() {
+    inquirer
+        .prompt([
+            {
+                name: "selectEmployee",
+                type: "list",
+                message: "Please select an Employee.",
+                choices: employeeChoices()
+            },
+            {
+                name: "role",
+                type: "list",
+                message: "What is the Employee's new role?",
+                choices: roleChoices()
+            }
+        ])
+        .then(function (answer) {
+            // when finished prompting, insert a new item into the db with that info
+            var roleId = roleArray.indexOf(answer.role) + 1;
+            var employeeId = employeeArray.indexOf(answer.selectEmployee) + 1;
+            console.log(roleArray)
+            console.log(roleId)
+            console.log(employeeArray)
+            connection.query("UPDATE employee SET WHERE ?",
+                {
+                    id: employeeId
+                },
+                {
+                    role_id: roleId
+                },
+                function (err) {
+                    if (err) throw err;
+                    console.log("Your Employee was updated successfully!");
+                    // return to main menu
+                    start();
+                }
+            );
+        });
+}
 
 const roleArray = [];
 function roleChoices() {
-  connection.query("SELECT * FROM role", function(err, res) {
-    if (err) throw err
-    for (var i = 0; i < res.length; i++) {
-      roleArray.push(res[i].title);
-    }
-  })
-  return roleArray;
+    connection.query("SELECT * FROM role", function (err, res) {
+        if (err) throw err
+        for (var i = 0; i < res.length; i++) {
+            roleArray.push(res[i].title);
+        }
+    })
+    return roleArray;
+}
+const employeeArray = [];
+function employeeChoices() {
+    connection.query("SELECT * FROM employee", function (err, res) {
+        if (err) throw err
+        for (var i = 0; i < res.length; i++) {
+            employeeArray.push(res[i].first_name + " " + res[i].last_name);
+        }
+    })
+    return employeeArray;
 }

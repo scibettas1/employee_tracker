@@ -1,29 +1,40 @@
-USE employee_tracker
+USE employee_tracker;
 
-INSERT INTO role
-    (title, salary. department_id)
-VALUES
-('John', 'Doe', 10000000, 1),
-("Sam", 'idk', 100000, 3)
+INSERT INTO department (name)
+VALUE ("Sales"),
+("Engineering"),
+("Finance"),
+("Legal");
 
-"SELECT employee.id, emloyee.first_name. emloyee.last_name"
+INSERT INTO role (title, salary, department_id)
+VALUE ("Lead Engineer", 150000, 2),
+("Legal Team Lead", 250000, 4),
+("Accountant", 125000, 3),
+("Sales Lead", 100000, 1),
+("Salesperson", 80000, 1),
+("Software Engineer", 120000, 2),
+("Lawyer", 190000, 4);
 
-
-"SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) 
+SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) 
 AS Manager FROM employee INNER JOIN role on role.id = employee.role_id 
 INNER JOIN department on department.id = role.department_id 
-WHERE department.name = 'Sales' 
-left join employee e on employee.manager_id = e.id;"
+left join employee e on employee.manager_id = e.id;
 
-"SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) 
-FROM employee As a
-INNER JOIN role on role.id = employee.role_id 
-INNER JOIN department As b on department.id = role.department_id 
-WHERE b.name = 'Sales';"
+SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) 
+AS Manager FROM employee INNER JOIN role on role.id = employee.role_id 
+INNER JOIN department on department.id = role.department_id 
+left join employee e on employee.manager_id = e.id
+WHERE name = 'Sales';
 
+SELECT role.id, role.title
+FROM role
+INNER JOIN employee ON role.id = employee.role_id;
 
+UPDATE employee SET WHERE ?
 
-
+SELECT first_name
+FROM employee
+WHERE last_name = 'Scibetta';
 
 "INSERT INTO emolyee SET ?" , employee
 
