@@ -23,7 +23,9 @@ connection.connect(function (err) {
     start();
 });
 
-// function which prompts the user for what action they should take
+//--------------------------------------------------------------------------------------------------
+//               Initial function that prompts the user for what action they should take
+//--------------------------------------------------------------------------------------------------
 function start() {
     console.clear();
     console.log("_____________________________________________")
@@ -43,7 +45,6 @@ function start() {
             message: "What would you like to do?",
             choices: ["View All Employees", "View All Employees by Department", "Add Employee", "Remove Employee", "Update Employee Role", "Exit"]
         }).then(function (answer) {
-            // based on their answer, either call the bid or the post functions
             if (answer.action === "View All Employees") {
                 viewAll();
             }
@@ -67,7 +68,9 @@ function start() {
             }
         });
 }
-
+//--------------------------------------------------------------------------------------------------
+//                                     Return to Main Menu or Exit
+//--------------------------------------------------------------------------------------------------
 function menu() {
     inquirer
         .prompt({
@@ -76,9 +79,7 @@ function menu() {
             message: "What would you like to do now?",
             choices: ["Main Menu", "Exit"]
         }).then(function (answer) {
-            // based on their answer, either call the bid or the post functions
             if (answer.action === "Main Menu") {
-                connection.end();
                 start();
             }
             else {
@@ -88,7 +89,9 @@ function menu() {
 }
 
 
-//View all Employees and Their Role, Salary, Department, and Manager
+//--------------------------------------------------------------------------------------------------
+//               View all Employees and Their Role, Salary, Department, and Manager
+//--------------------------------------------------------------------------------------------------
 function viewAll() {
     //when I watched our class recordings I realized we did this with the book authors on 11/17/20
     connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id;",
@@ -98,8 +101,9 @@ function viewAll() {
             menu()
         })
 }
-
-
+//--------------------------------------------------------------------------------------------------
+//                             View employees in a selected department
+//--------------------------------------------------------------------------------------------------
 function viewByDept() {
     inquirer
         .prompt([
@@ -163,7 +167,9 @@ function legalDept() {
             menu()
         })
 }
-
+//--------------------------------------------------------------------------------------------------
+//                                        Add New Employee
+//--------------------------------------------------------------------------------------------------
 function addEmployee() {
     inquirer
         .prompt([
@@ -191,12 +197,18 @@ function addEmployee() {
             }
         ])
         .then(function (answer) {
-            // when finished prompting, insert a new item into the db with that info
             var roleId = roleArray.indexOf(answer.role) + 1;
-            var employeeId = employeeArray.indexOf(answer.manager) + 1;
+            //all employees are listed in the employeeArray in order by id
+            //all ids are listed in the employeeIdArray in numerical order
+            //so the employees in the first array will always have the same index as their id in the second array
+            //this is how we grab their employee id
+            var employeeName = employeeArray.indexOf(answer.manager);
+            var i = employeeName;
+            var employeeId = employeeIdArray[i];
             //console.log(roleArray)
             //console.log(roleId)
             //console.log(employeeArray)
+            //console.log(employeeName)
             //console.log(employeeId)
             connection.query("INSERT INTO employee SET ?",
                 {
@@ -214,10 +226,12 @@ function addEmployee() {
             );
         });
 }
-//pull the employee id from the table in sql NOT the array and update/delete by id
-//the index in the array will not match up with the employee id once we start deleting people
+//--------------------------------------------------------------------------------------------------
+//                                     Update Employee Role
+//--------------------------------------------------------------------------------------------------
 function updateRole() {
-    const employeeIdArray = [];
+    var employeeIdArray = [];
+    var employeeArray = [];
     connection.query("SELECT * FROM employee", function (err, res) {
         if (err) throw err;
         inquirer
@@ -243,39 +257,45 @@ function updateRole() {
                 }
             ])
             .then(function (answer) {
-                const roleId = roleArray.indexOf(answer.role) + 1;
+                var roleId = roleArray.indexOf(answer.role) + 1;
                 //console.log(answer.role)
                 //all employees are listed in the employeeArray in order by id
                 //all ids are listed in the employeeIdArray in numerical order
                 //so the employees in the first array will always have the same index as their id in the second array
                 //this is how we grab their employee id
-                const employeeName = employeeArray.indexOf(answer.selectEmployee) + 1;
-                const i = employeeName;
-                const employeeId = employeeIdArray[i];
+                var employeeName = employeeArray.indexOf(answer.selectEmployee);
+                var i = employeeName;
+                var employeeId = employeeIdArray[i];
                 //console.log(roleArray);
                 //console.log(roleId);
-                console.log(employeeArray);
-                console.log(employeeIdArray);
-                console.log(employeeName);
-                console.log(employeeId);
-                connection.query("UPDATE employee SET WHERE employee.id = ?", //their is a sytax error here but IDK what it is
-                    {
-                        role_id: roleId
-                    },
-                    {
-                        id: employeeId
-                    },
+                //console.log(employeeArray);
+                //console.log(employeeIdArray);
+                //console.log(employeeName);
+                //console.log(employeeId);
+                connection.query("UPDATE employee SET ? WHERE ?", //there is a sytax error here but IDK what it is
+                    [
+                        {
+                            role_id: roleId
+                        },
+                        {
+                            id: employeeId
+                        }
+                    ],
                     function (err) {
                         if (err) throw err;
                         console.log("Your Employee was updated successfully!");
                         menu();
                     }
                 );
-            });
+            })
     });
 }
+//--------------------------------------------------------------------------------------------------
+//                                      Remove Employee
+//--------------------------------------------------------------------------------------------------
 function removeEmployee() {
-    const employeeIdArray = [];
+    var employeeIdArray = [];
+    var employeeArray = [];
     connection.query("SELECT * FROM employee", function (err, res) {
         if (err) throw err;
         inquirer
@@ -295,13 +315,13 @@ function removeEmployee() {
                 }
             ])
             .then(function (answer) {
-                const employeeName = employeeArray.indexOf(answer.selectEmployee);
-                const i = employeeName;
-                const employeeId = employeeIdArray[i];
-                console.log(employeeArray);
-                console.log(employeeIdArray);
-                console.log(employeeName);
-                console.log(employeeId);
+                var employeeName = employeeArray.indexOf(answer.selectEmployee);
+                var i = employeeName;
+                var employeeId = employeeIdArray[i];
+                //console.log(employeeArray);
+                //console.log(employeeIdArray);
+                //console.log(employeeName);
+                //console.log(employeeId);
                 connection.query("DELETE FROM employee WHERE ?",
                     {
                         id: employeeId
@@ -309,14 +329,16 @@ function removeEmployee() {
                     function (err) {
                         if (err) throw err;
                         console.log("Your Employee was removed successfully!");
+                        menu();
                     })
-                menu();
-            });
+            })
     });
 }
+//--------------------------------------------------------------------------------------------------
+//                   Additional Arrays and Functions Used Throughout the Code
+//--------------------------------------------------------------------------------------------------
 
-
-const roleArray = [];
+var roleArray = [];
 function roleChoices() {
     connection.query("SELECT * FROM role", function (err, res) {
         if (err) throw err;
@@ -326,13 +348,17 @@ function roleChoices() {
     })
     return roleArray;
 }
-const employeeArray = [];
+// This function was originally written with the intent to be called multiple times
+// However, it only seems to function the first time called (in the addEmployee function).
+// So, this code is duplicated whereever it couldn't be called.
+var employeeArray = [];
+var employeeIdArray = [];
 function employeeChoices() {
-    console.log("It's Working!!!")
     connection.query("SELECT * FROM employee", function (err, res) {
         if (err) throw err;
         for (var i = 0; i < res.length; i++) {
             employeeArray.push(res[i].first_name + " " + res[i].last_name);
+            employeeIdArray.push(res[i].id);
         }
     })
     return employeeArray;

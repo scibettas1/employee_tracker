@@ -30,12 +30,17 @@ SELECT role.id, role.title
 FROM role
 INNER JOIN employee ON role.id = employee.role_id;
 
-UPDATE employee SET WHERE ?
+UPDATE employee
+SET manager_id = 26,
+WHERE id = 13;
 
-DELETE FROM employee WHERE id = 6
-
-
-"INSERT INTO emolyee SET ?" , employee
+USE employee_tracker;
+DELETE FROM employee WHERE id = 13;
+DELETE FROM employee WHERE id = 23;
+DELETE FROM employee WHERE id = 28;
+DELETE FROM employee WHERE id = 38;
+DELETE FROM employee WHERE id = 42;
+DELETE FROM employee WHERE id = 43;
 
 
 -- Find all emloyees, join with roles and departemnts to display the roles, salaries. departs and there managers
@@ -47,6 +52,4 @@ DELETE FROM employee WHERE id = 6
 -- remove an employtee
 
 -- update an employee role
-
-start with basic iquirer prompts (the them printed to CLI)
 
