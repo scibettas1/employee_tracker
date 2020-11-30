@@ -32,9 +32,8 @@ INNER JOIN employee ON role.id = employee.role_id;
 
 UPDATE employee SET WHERE ?
 
-SELECT first_name
-FROM employee
-WHERE last_name = 'Scibetta';
+DELETE FROM employee WHERE id = 6
+
 
 "INSERT INTO emolyee SET ?" , employee
 

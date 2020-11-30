@@ -25,12 +25,23 @@ connection.connect(function (err) {
 
 // function which prompts the user for what action they should take
 function start() {
+    console.clear();
+    console.log("_____________________________________________")
+    console.log("|   ___ __ __ ___  |     ___      ___ ___   |")
+    console.log("|   |__ | | | |__| |    |   | | / |__ |__   |")
+    console.log("|   |__ |   | |    |___ |___| |/  |__ |__   |")
+    console.log("|                             /             |")
+    console.log("|      ___ ___    /|  ___ | /  ___ ___      |")
+    console.log("|       |  |__|  /_| /    |/_  |__ |__|     |")
+    console.log("|       |  |  | /  | |___ |  | |__ |  |     |")
+    console.log("|___________________________________________|")
+    console.log("                                             ")
     inquirer
         .prompt({
             name: "action",
             type: "list",
             message: "What would you like to do?",
-            choices: ["View All Employees", "View All Employees by Department", "Add Employee", "Update Employee Role", "Exit"]
+            choices: ["View All Employees", "View All Employees by Department", "Add Employee", "Remove Employee", "Update Employee Role", "Exit"]
         }).then(function (answer) {
             // based on their answer, either call the bid or the post functions
             if (answer.action === "View All Employees") {
@@ -42,10 +53,9 @@ function start() {
             else if (answer.action === "Add Employee") {
                 addEmployee();
             }
-            //Part of the Bonus. Saving this for the end.
-            /* else if (answer.action === "Remove Employee") {
+            else if (answer.action === "Remove Employee") {
                 removeEmployee();
-            } */
+            }
             else if (answer.action === "Update Employee Role") {
                 updateRole();
             }
@@ -58,14 +68,34 @@ function start() {
         });
 }
 
+function menu() {
+    inquirer
+        .prompt({
+            name: "action",
+            type: "list",
+            message: "What would you like to do now?",
+            choices: ["Main Menu", "Exit"]
+        }).then(function (answer) {
+            // based on their answer, either call the bid or the post functions
+            if (answer.action === "Main Menu") {
+                connection.end();
+                start();
+            }
+            else {
+                connection.end();
+            }
+        });
+}
+
+
 //View all Employees and Their Role, Salary, Department, and Manager
 function viewAll() {
     //when I watched our class recordings I realized we did this with the book authors on 11/17/20
-    connection.query("SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id;",
+    connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id;",
         function (err, res) {
             if (err) throw err
             console.table(res)
-            start()
+            menu()
         })
 }
 
@@ -102,35 +132,35 @@ function viewByDept() {
         })
 }
 function salesDept() {
-    connection.query("SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id WHERE name = 'Sales';",
+    connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id WHERE name = 'Sales';",
         function (err, res) {
             if (err) throw err
             console.table(res)
-            start()
+            menu()
         })
 }
 function engDept() {
-    connection.query("SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id WHERE name = 'Engineering';",
+    connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id WHERE name = 'Engineering';",
         function (err, res) {
             if (err) throw err
             console.table(res)
-            start()
+            menu()
         })
 }
 function finDept() {
-    connection.query("SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id WHERE name = 'Finance';",
+    connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id WHERE name = 'Finance';",
         function (err, res) {
             if (err) throw err
             console.table(res)
-            start()
+            menu()
         })
 }
 function legalDept() {
-    connection.query("SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id WHERE name = 'Legal';",
+    connection.query("SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id left join employee e on employee.manager_id = e.id WHERE name = 'Legal';",
         function (err, res) {
             if (err) throw err
             console.table(res)
-            start()
+            menu()
         })
 }
 
@@ -179,56 +209,117 @@ function addEmployee() {
                     if (err) throw err;
                     console.log("Your Employee was added successfully!");
                     // return to main menu
-                    start();
+                    menu();
                 }
             );
         });
 }
+//pull the employee id from the table in sql NOT the array and update/delete by id
+//the index in the array will not match up with the employee id once we start deleting people
 function updateRole() {
-    inquirer
-        .prompt([
-            {
-                name: "selectEmployee",
-                type: "list",
-                message: "Please select an Employee.",
-                choices: employeeChoices()
-            },
-            {
-                name: "role",
-                type: "list",
-                message: "What is the Employee's new role?",
-                choices: roleChoices()
-            }
-        ])
-        .then(function (answer) {
-            // when finished prompting, insert a new item into the db with that info
-            var roleId = roleArray.indexOf(answer.role) + 1;
-            var employeeId = employeeArray.indexOf(answer.selectEmployee) + 1;
-            //console.log(roleArray)
-            //console.log(roleId)
-            console.log(employeeArray)
-            console.log(employeeId)
-            connection.query("UPDATE employee SET WHERE ?",
+    const employeeIdArray = [];
+    connection.query("SELECT * FROM employee", function (err, res) {
+        if (err) throw err;
+        inquirer
+            .prompt([
                 {
-                    id: employeeId,
+                    name: "selectEmployee",
+                    type: "list",
+                    message: "Please select an Employee.",
+                    choices:
+                        function () {
+                            for (var i = 0; i < res.length; i++) {
+                                employeeArray.push(res[i].first_name + " " + res[i].last_name);
+                                employeeIdArray.push(res[i].id);
+                            }
+                            return employeeArray;
+                        }
                 },
                 {
-                    role_id: roleId,
-                },
-                function (err) {
-                    if (err) throw err;
-                    console.log("Your Employee was updated successfully!");
-                    // return to main menu
-                    start();
+                    name: "role",
+                    type: "list",
+                    message: "What is the Employee's new role?",
+                    choices: roleChoices()
                 }
-            );
-        });
+            ])
+            .then(function (answer) {
+                const roleId = roleArray.indexOf(answer.role) + 1;
+                //console.log(answer.role)
+                //all employees are listed in the employeeArray in order by id
+                //all ids are listed in the employeeIdArray in numerical order
+                //so the employees in the first array will always have the same index as their id in the second array
+                //this is how we grab their employee id
+                const employeeName = employeeArray.indexOf(answer.selectEmployee) + 1;
+                const i = employeeName;
+                const employeeId = employeeIdArray[i];
+                //console.log(roleArray);
+                //console.log(roleId);
+                console.log(employeeArray);
+                console.log(employeeIdArray);
+                console.log(employeeName);
+                console.log(employeeId);
+                connection.query("UPDATE employee SET WHERE employee.id = ?", //their is a sytax error here but IDK what it is
+                    {
+                        role_id: roleId
+                    },
+                    {
+                        id: employeeId
+                    },
+                    function (err) {
+                        if (err) throw err;
+                        console.log("Your Employee was updated successfully!");
+                        menu();
+                    }
+                );
+            });
+    });
 }
+function removeEmployee() {
+    const employeeIdArray = [];
+    connection.query("SELECT * FROM employee", function (err, res) {
+        if (err) throw err;
+        inquirer
+            .prompt([
+                {
+                    name: "selectEmployee",
+                    type: "list",
+                    message: "Please select an Employee.",
+                    choices:
+                        function () {
+                            for (var i = 0; i < res.length; i++) {
+                                employeeArray.push(res[i].first_name + " " + res[i].last_name);
+                                employeeIdArray.push(res[i].id);
+                            }
+                            return employeeArray;
+                        }
+                }
+            ])
+            .then(function (answer) {
+                const employeeName = employeeArray.indexOf(answer.selectEmployee);
+                const i = employeeName;
+                const employeeId = employeeIdArray[i];
+                console.log(employeeArray);
+                console.log(employeeIdArray);
+                console.log(employeeName);
+                console.log(employeeId);
+                connection.query("DELETE FROM employee WHERE ?",
+                    {
+                        id: employeeId
+                    },
+                    function (err) {
+                        if (err) throw err;
+                        console.log("Your Employee was removed successfully!");
+                    })
+                menu();
+            });
+    });
+}
+
 
 const roleArray = [];
 function roleChoices() {
     connection.query("SELECT * FROM role", function (err, res) {
-        if (err) throw err
+        if (err) throw err;
         for (var i = 0; i < res.length; i++) {
             roleArray.push(res[i].title);
         }
@@ -237,8 +328,9 @@ function roleChoices() {
 }
 const employeeArray = [];
 function employeeChoices() {
+    console.log("It's Working!!!")
     connection.query("SELECT * FROM employee", function (err, res) {
-        if (err) throw err
+        if (err) throw err;
         for (var i = 0; i < res.length; i++) {
             employeeArray.push(res[i].first_name + " " + res[i].last_name);
         }

@@ -23,28 +23,4 @@ CREATE TABLE department(
   name VARCHAR(30) NOT NULL,
   PRIMARY KEY (id)
 );
-INSERT INTO department (name)
-VALUE ("Sales"),
-("Engineering"),
-("Finance"),
-("Legal");
 
-
-INSERT INTO role (title, salary, department_id)
-VALUE ("Lead Engineer", 150000, 2),
-("Legal Team Lead", 250000, 4),
-("Accountant", 125000, 3),
-("Sales Lead", 100000, 1),
-("Salesperson", 80000, 1),
-("Software Engineer", 120000, 2),
-("Lawyer", 190000, 4);
-
-
-INSERT INTO employee (first_name, last_name, manager_id, role_id)
-VALUE ("John", "Doe", 3, 7),
-("Mike", "Chan", 1, 8),
-("Ashley","Rodriguez",null,4),
-("Kevin", "Tupik", 3, 9),
-("Malia", "Brown", null, 6),
-("Sarah", "Lourd", null, 5),
-("Christian", "Eckenrode", 2, 4);
